@@ -1,0 +1,45 @@
+---
+description: "Project-specific context — generated from workflow planning documents"
+alwaysApply: true
+---
+
+# Project: {{PROJECT_NAME}}
+
+## Description
+{{PROJECT_DESCRIPTION}}
+
+## Project Profile
+- **Type**: {{PROJECT_TYPE}}
+- **Complexity**: {{COMPLEXITY}}
+
+## Tech Stack
+{{TECH_STACK}}
+
+## Documentation URLs
+Reference these with @Docs during implementation:
+{{DOC_URLS}}
+
+## Architecture
+{{ARCHITECTURE_PATTERN}}
+
+## What NOT to Build (Use Existing Solutions)
+{{DONT_BUILD}}
+
+## Project Documents
+Reference these for implementation guidance:
+- @docs/LANDSCAPE.md — Build-vs-buy decisions and existing solutions
+- @docs/RESEARCH.md — Technology decisions, version pinning, API references
+- @docs/PRD.md — Product requirements and acceptance criteria
+- @docs/ARCHITECTURE.md — System design, component interfaces, data flows
+- @docs/TASKS.md — Implementation plan with dependencies and verification criteria
+- @docs/TESTING_PLAN.md — Testing strategy, test infrastructure, coverage goals
+
+## Working Agreements
+- Follow the architecture patterns defined in ARCHITECTURE.md
+- Use pinned versions from RESEARCH.md — do not upgrade without updating docs
+- Verify external APIs against @Docs before using them
+- Write tests alongside implementation as specified in TASKS.md
+- Update documentation when implementation deviates from the plan
+- Mark completed tasks in TASKS.md after verification passes
+- Log errors with structured context — never use print() for operational output
+- Handle ALL external operation failures — no silent swallowing of errors

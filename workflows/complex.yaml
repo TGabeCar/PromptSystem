@@ -1,0 +1,65 @@
+name: "Complex"
+description: "1+ weeks — multi-component systems, customer-facing products"
+steps:
+  - id: landscape
+    name: "Full Landscape Analysis"
+    prompt_file: "landscape_full.md"
+    target_tool: "Grok (web search recommended)"
+    stores_as: "LANDSCAPE_ANALYSIS"
+    injects: ["PROJECT_DESCRIPTION"]
+    output_doc: "LANDSCAPE.md"
+    skippable: false
+
+  - id: research
+    name: "Deep Technology Research"
+    prompt_file: "research_deep.md"
+    target_tool: "Grok (web search recommended)"
+    stores_as: "RESEARCH_DOC"
+    injects: ["PROJECT_DESCRIPTION", "LANDSCAPE_ANALYSIS"]
+    output_doc: "RESEARCH.md"
+    skippable: false
+
+  - id: prd
+    name: "Product Requirements Document"
+    prompt_file: "prd_full.md"
+    target_tool: "Poppy (Opus 4.6)"
+    stores_as: "PRD"
+    injects: ["PROJECT_DESCRIPTION", "LANDSCAPE_ANALYSIS", "RESEARCH_DOC"]
+    output_doc: "PRD.md"
+    skippable: false
+
+  - id: architecture
+    name: "Architecture Design"
+    prompt_file: "architecture_full.md"
+    target_tool: "Poppy (Opus 4.6)"
+    stores_as: "ARCHITECTURE"
+    injects: ["PROJECT_DESCRIPTION", "RESEARCH_DOC", "PRD"]
+    output_doc: "ARCHITECTURE.md"
+    skippable: false
+
+  - id: tasks
+    name: "Detailed Task Breakdown"
+    prompt_file: "tasks_detailed.md"
+    target_tool: "Poppy (Opus 4.6)"
+    stores_as: "TASKS"
+    injects: ["PROJECT_DESCRIPTION", "RESEARCH_DOC", "PRD", "ARCHITECTURE"]
+    output_doc: "TASKS.md"
+    skippable: false
+
+  - id: testing_plan
+    name: "Testing Plan"
+    prompt_file: "testing_plan.md"
+    target_tool: "Poppy (Opus 4.6)"
+    stores_as: "TESTING_PLAN"
+    injects: ["PRD", "ARCHITECTURE", "TASKS"]
+    output_doc: "TESTING_PLAN.md"
+    skippable: false
+
+  - id: setup
+    name: "Project Setup & Cursor Config"
+    prompt_file: "setup.md"
+    target_tool: "Poppy (Opus 4.6) or Cursor"
+    stores_as: "SETUP"
+    injects: ["PROJECT_DESCRIPTION", "RESEARCH_DOC", "PRD", "ARCHITECTURE", "TASKS", "TESTING_PLAN"]
+    output_doc: null
+    skippable: false

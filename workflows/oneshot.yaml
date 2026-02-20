@@ -1,0 +1,195 @@
+# One-shot prompts — single-use, no project state. Copy to clipboard and paste into AI.
+categories:
+  research: "Research & Discovery"
+  decisions: "Decisions & Comparison"
+  communication: "Communication & Stakeholders"
+  documentation: "Documentation"
+  base44: "Base44 Development"
+  other: "Other"
+
+prompts:
+  - id: find_best_tool
+    category: research
+    name: "Find Best Tool"
+    prompt_file: "oneshot_find_best_tool.md"
+    target_tool: "Grok (web search recommended)"
+    inputs:
+      - key: NEED
+        prompt: "What do you need to accomplish? (e.g. 'track time across projects', 'manage vendor contracts')"
+
+  - id: research_topic
+    category: research
+    name: "Research Topic"
+    prompt_file: "oneshot_research_topic.md"
+    target_tool: "Grok (web search recommended)"
+    inputs:
+      - key: TOPIC
+        prompt: "What would you like to research? (topic, question, or concept)"
+
+  - id: compare_options
+    category: decisions
+    name: "Compare Options & Decide"
+    prompt_file: "oneshot_compare_options.md"
+    target_tool: "Grok or Poppy"
+    inputs:
+      - key: SITUATION
+        prompt: "Describe the situation and what you're deciding (e.g. 'We need a new CRM for sales team of 15')"
+      - key: OPTIONS
+        prompt: "Options to compare (comma-separated, or 'find options' to discover):"
+
+  - id: build_vs_buy
+    category: decisions
+    name: "Build vs Buy"
+    prompt_file: "oneshot_build_vs_buy.md"
+    target_tool: "Grok (web search recommended)"
+    inputs:
+      - key: CAPABILITY
+        prompt: "What capability or problem do you need to solve? Describe it:"
+
+  - id: meeting_prep
+    category: communication
+    name: "Meeting Prep"
+    prompt_file: "oneshot_meeting_prep.md"
+    target_tool: "Poppy or Cursor"
+    inputs:
+      - key: TOPIC
+        prompt: "Meeting topic or purpose:"
+      - key: AUDIENCE
+        prompt: "Who will be there? (roles, names if relevant):"
+      - key: GOAL
+        prompt: "What do you want to achieve? (optional — press Enter to skip):"
+
+  - id: stakeholder_brief
+    category: communication
+    name: "Stakeholder Brief"
+    prompt_file: "oneshot_stakeholder_brief.md"
+    target_tool: "Poppy or Cursor"
+    inputs:
+      - key: TOPIC
+        prompt: "What complex topic needs to be explained?"
+      - key: AUDIENCE
+        prompt: "Who is the audience? (e.g. non-technical executives, finance team):"
+
+  - id: competitive_landscape
+    category: decisions
+    name: "Competitive Landscape"
+    prompt_file: "oneshot_competitive_landscape.md"
+    target_tool: "Grok (web search recommended)"
+    inputs:
+      - key: SUBJECT
+        prompt: "Product, category, or competitor to analyze:"
+
+  - id: vendor_comparison
+    category: decisions
+    name: "Vendor Comparison"
+    prompt_file: "oneshot_vendor_comparison.md"
+    target_tool: "Grok (web search recommended)"
+    inputs:
+      - key: NEED
+        prompt: "What do you need from a vendor? (e.g. 'contract management software')"
+      - key: VENDORS
+        prompt: "Vendors to compare (comma-separated), or 'find vendors' to discover:"
+
+  - id: learning_path
+    category: research
+    name: "Learning Path"
+    prompt_file: "oneshot_learning_path.md"
+    target_tool: "Grok (web search recommended)"
+    inputs:
+      - key: TOPIC
+        prompt: "What do you need to learn? (technology, concept, or skill):"
+
+  - id: summarize
+    category: documentation
+    name: "Summarize / TL;DR"
+    prompt_file: "oneshot_summarize.md"
+    target_tool: "Poppy or Cursor"
+    inputs:
+      - key: SUBJECT
+        prompt: "What to summarize? (paste content, describe a document, or give a topic):"
+
+  - id: process_documentation
+    category: documentation
+    name: "Process Documentation"
+    prompt_file: "oneshot_process_documentation.md"
+    target_tool: "Poppy or Cursor"
+    inputs:
+      - key: PROCESS
+        prompt: "Describe the process to document (e.g. 'how we onboard new clients', 'monthly close')"
+
+  # Base44 development
+  - id: base44_build_app
+    category: base44
+    name: "Build New App"
+    prompt_file: "oneshot_base44_build_app.md"
+    target_tool: "Cursor (with Base44 docs) or Base44 AI"
+    inputs:
+      - key: APP_IDEA
+        prompt: "Describe the app you want to build (features, users, data, workflows):"
+
+  - id: base44_bug_fix
+    category: base44
+    name: "Bug Fix"
+    prompt_file: "oneshot_base44_bug_fix.md"
+    target_tool: "Cursor"
+    inputs:
+      - key: BUG_DESC
+        prompt: "Describe the bug — what's happening (or not happening) and what you expected:"
+
+  - id: base44_codebase_analysis
+    category: base44
+    name: "Codebase Analysis"
+    prompt_file: "oneshot_base44_codebase_analysis.md"
+    target_tool: "Cursor"
+    inputs:
+      - key: SCOPE
+        prompt: "What to analyze? (e.g. 'entire app', 'functions/ only', 'authentication flow'):"
+
+  - id: base44_cleanup
+    category: base44
+    name: "Cleanup / Refactor"
+    prompt_file: "oneshot_base44_cleanup.md"
+    target_tool: "Cursor"
+    inputs:
+      - key: SCOPE
+        prompt: "What to clean up? (e.g. 'dead code in components/', 'standardize error handling in functions/'):"
+
+  - id: base44_technical_doc
+    category: base44
+    name: "Technical Documentation"
+    prompt_file: "oneshot_base44_technical_doc.md"
+    target_tool: "Cursor or Poppy"
+    inputs:
+      - key: DOC_TOPIC
+        prompt: "What to document? (e.g. 'Task management flow', 'entity model', 'onboarding for new devs'):"
+
+  - id: base44_technical_doc_overall
+    category: base44
+    name: "Overall Technical Documentation"
+    prompt_file: "oneshot_base44_technical_doc_overall.md"
+    target_tool: "Cursor or Poppy"
+
+  - id: base44_transfer_feature
+    category: base44
+    name: "Transfer Feature Between Apps"
+    type: sequence
+    inputs:
+      - key: FEATURE_DESC
+        prompt: "Describe the feature to extract (e.g. 'task management with kanban board', 'invoice generation and PDF export'):"
+      - key: FEATURE_TYPE
+        prompt: "What does this feature involve? (backend only / UI only / full stack / not sure):"
+    steps:
+      - name: "Export Feature from Source App"
+        prompt_file: "oneshot_base44_export_feature.md"
+        target_tool: "Cursor or Base44 AI (on source app)"
+        note: "Save the AI's full response — you'll paste it into the next step."
+      - name: "Distill into Implementation Prompt"
+        prompt_file: "oneshot_base44_distill_feature.md"
+        target_tool: "Poppy (Opus) or capable LLM"
+        note: "Paste this prompt first, then paste the export output from Step 1 right after it. The AI will produce a clean implementation prompt — paste that directly into your target Base44 app."
+
+  - id: base44_technical_doc_update
+    category: base44
+    name: "Update Existing Technical Documentation"
+    prompt_file: "oneshot_base44_technical_doc_update.md"
+    target_tool: "Cursor"

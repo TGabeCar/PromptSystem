@@ -1,0 +1,2 @@
+[console_scripts]
+workflow = app.__main__:main

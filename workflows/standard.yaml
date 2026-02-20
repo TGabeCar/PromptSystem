@@ -1,0 +1,47 @@
+name: "Standard"
+description: "1-5 days — internal tools, dashboards, APIs"
+steps:
+  - id: landscape
+    name: "Landscape Analysis"
+    prompt_file: "landscape_full.md"
+    target_tool: "Grok (web search recommended)"
+    stores_as: "LANDSCAPE_ANALYSIS"
+    injects: ["PROJECT_DESCRIPTION"]
+    output_doc: "LANDSCAPE.md"
+    skippable: false
+
+  - id: research
+    name: "Technology Research"
+    prompt_file: "research_standard.md"
+    target_tool: "Grok (web search recommended)"
+    stores_as: "RESEARCH_DOC"
+    injects: ["PROJECT_DESCRIPTION", "LANDSCAPE_ANALYSIS"]
+    output_doc: "RESEARCH.md"
+    skippable: false
+
+  - id: prd_architecture
+    name: "PRD + Architecture (Combined)"
+    prompt_file: "prd_architecture_combined.md"
+    target_tool: "Poppy (Opus 4.6)"
+    stores_as: "PRD_ARCHITECTURE"
+    injects: ["PROJECT_DESCRIPTION", "LANDSCAPE_ANALYSIS", "RESEARCH_DOC"]
+    output_doc: "PRD.md"
+    skippable: false
+
+  - id: tasks
+    name: "Task Breakdown"
+    prompt_file: "tasks_standard.md"
+    target_tool: "Poppy (Opus 4.6)"
+    stores_as: "TASKS"
+    injects: ["PROJECT_DESCRIPTION", "RESEARCH_DOC", "PRD_ARCHITECTURE"]
+    output_doc: "TASKS.md"
+    skippable: false
+
+  - id: setup
+    name: "Project Setup & Cursor Config"
+    prompt_file: "setup.md"
+    target_tool: "Poppy (Opus 4.6) or Cursor"
+    stores_as: "SETUP"
+    injects: ["PROJECT_DESCRIPTION", "RESEARCH_DOC", "PRD_ARCHITECTURE", "TASKS"]
+    output_doc: null
+    skippable: false

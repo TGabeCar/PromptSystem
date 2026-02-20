@@ -1,0 +1,141 @@
+---
+description: "Enhanced security rules for customer-facing products and backend services"
+globs:
+  - "**/auth*"
+  - "**/api*"
+  - "**/middleware*"
+  - "**/routes*"
+  - "**/handlers*"
+  - "**/controllers*"
+  - "**/endpoints*"
+  - "**/services*"
+  - "**/models*"
+---
+
+# Security Rules (Customer-Facing Products)
+
+## OWASP Top 10 Awareness (2025)
+
+### A01: Broken Access Control
+- Implement access control checks on EVERY endpoint — not just the UI
+- Deny by default — explicitly grant permissions, don't assume access
+- Validate that the authenticated user has permission to access the requested resource
+- Don't rely on client-side access control — enforce on the server
+- Log all access control failures
+
+### A02: Cryptographic Failures
+- Use TLS (HTTPS) for all data in transit
+- Encrypt sensitive data at rest
+- Use strong, current algorithms (AES-256, bcrypt/argon2 for passwords)
+- Don't implement your own cryptography — use established libraries
+- Rotate secrets and keys on a schedule
+
+### A03: Injection & Supply Chain
+- Use parameterized queries for ALL database operations
+- Use ORM methods instead of raw SQL where possible
+- Validate and sanitize all input — type, length, range, format
+- Use allowlists over blocklists for input validation
+- Escape output based on context (HTML, URL, SQL, OS command)
+- Pin all dependency versions with lockfiles
+- Audit dependencies for known vulnerabilities regularly
+- Verify package names to prevent typosquatting attacks
+
+### A05: Security Misconfiguration
+- Remove default credentials and accounts
+- Disable directory listing
+- Set secure HTTP headers (Content-Security-Policy, X-Content-Type-Options, etc.)
+- Don't expose stack traces or debug info in production errors
+- Keep dependencies updated — check for known vulnerabilities
+- Validate configuration at startup — fail fast on missing required values
+
+### A07: Cross-Site Scripting (XSS)
+- Encode output based on the context (HTML body, attribute, JavaScript, CSS, URL)
+- Use Content Security Policy headers
+- Sanitize HTML content from users with a battle-tested library (DOMPurify, Bleach)
+- Avoid `innerHTML`, `dangerouslySetInnerHTML`, `eval()` with user content
+
+## Input Validation
+- Validate ALL inputs on the server side — client validation is for UX only
+- Check: type, length, range, format, allowed characters
+- Reject unexpected fields in request bodies
+- Use a validation library (Pydantic, FluentValidation, Zod, Joi)
+- Return specific, helpful validation error messages
+- Validate file uploads: type, size, content (not just extension)
+
+## Authentication
+- Use established auth libraries — don't build your own
+- Enforce strong password requirements or use passwordless auth
+- Implement account lockout after failed attempts (with progressive delays)
+- Use secure session management:
+  - HttpOnly, Secure, SameSite flags on cookies
+  - Regenerate session ID after login
+  - Set appropriate session timeouts
+- Multi-factor authentication for admin/sensitive operations
+- Never store passwords in plain text — use bcrypt or argon2
+
+## Authorization
+- Implement role-based (RBAC) or attribute-based (ABAC) access control
+- Check authorization at the API/service layer, not just the UI
+- Log authorization failures for monitoring
+- Implement principle of least privilege — users get minimum required access
+- Separate admin and user functionality
+- Prevent IDOR (Insecure Direct Object Reference) — validate ownership on every resource access
+
+## Rate Limiting
+- Implement rate limiting on all authentication endpoints
+- Rate limit API endpoints to prevent abuse
+- Use progressive delays for repeated failures (exponential backoff)
+- Return 429 Too Many Requests with Retry-After header
+- Monitor for rate limit bypass attempts
+- Consider different limits for authenticated vs unauthenticated users
+
+## CORS Configuration
+- Don't use `Access-Control-Allow-Origin: *` in production
+- Whitelist specific allowed origins
+- Restrict allowed methods and headers
+- Don't allow credentials with wildcard origins
+- Set appropriate `Access-Control-Max-Age`
+
+## Secrets Management
+- Store secrets in environment variables or a secrets manager — NEVER in code
+- Don't log secrets, tokens, or passwords
+- Use different secrets for each environment (dev, staging, production)
+- Rotate secrets regularly
+- Use constant-time comparison for token validation
+- Scan commits for accidentally committed secrets (use pre-commit hooks)
+
+## Audit Logging
+- Log all authentication events (login, logout, failed attempts)
+- Log all authorization failures
+- Log data modifications (who changed what, when)
+- Log admin actions
+- Don't log sensitive data (passwords, tokens, PII) in plain text
+- Store audit logs separately from application logs
+- Ensure logs are tamper-resistant
+- Include: timestamp, user_id, action, resource, result, source_ip
+
+## HTTP Security Headers
+Set these headers on all responses:
+- `Content-Security-Policy` — restrict resource loading
+- `X-Content-Type-Options: nosniff` — prevent MIME sniffing
+- `X-Frame-Options: DENY` — prevent clickjacking
+- `Strict-Transport-Security` — enforce HTTPS
+- `Referrer-Policy: strict-origin-when-cross-origin` — limit referrer info
+- `Permissions-Policy` — restrict browser features
+
+## Data Protection
+- Classify data by sensitivity (public, internal, confidential, restricted)
+- Apply appropriate protection for each classification
+- Minimize data collection — only collect what you need
+- Implement data retention policies
+- Handle PII according to applicable regulations (GDPR, CCPA, etc.)
+- Provide data export and deletion capabilities for user data
+- Encrypt sensitive fields at the application level where needed
+
+## Supply Chain Security
+- Pin all dependency versions exactly — no ranges
+- Use lockfiles and verify integrity hashes
+- Audit dependencies for vulnerabilities on every CI run
+- Review new dependencies before adding (maintainer reputation, license, popularity)
+- Monitor for dependency deprecation and EOL announcements
+- Consider SBOM (Software Bill of Materials) generation for production deployments

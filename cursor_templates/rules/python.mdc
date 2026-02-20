@@ -1,0 +1,87 @@
+---
+description: "Python-specific coding rules"
+globs:
+  - "**/*.py"
+---
+
+# Python Development Rules
+
+## Type Hints
+- Use type hints on ALL function signatures — parameters and return types
+- Use `from __future__ import annotations` for modern syntax in older Python versions
+- Prefer `str | None` over `Optional[str]` (Python 3.10+)
+- Use `list[str]` over `List[str]` (Python 3.9+)
+- For complex types, define TypeAlias or use TypedDict
+
+## Imports
+- Standard library first, then third-party, then local — separated by blank lines
+- Use absolute imports, not relative
+- Import specific names, not entire modules (unless the module is the API — e.g., `import os`)
+- Sort imports alphabetically within each group
+
+## Path Handling
+- Use `pathlib.Path` over `os.path` for all file system operations
+- Use `/` operator for path joining: `Path("dir") / "file.txt"`
+- Use `.read_text()` / `.write_text()` over manual `open()`/`close()`
+
+## Data Validation
+- Use Pydantic models for external data validation (API inputs, config files, user data)
+- Use dataclasses for internal data structures without validation needs
+- Validate at the boundary — don't trust data from external sources
+
+## Async Patterns (if applicable)
+- Use `async`/`await` consistently — don't mix sync and async in the same call chain
+- Use `asyncio.gather()` for concurrent operations
+- Always handle `asyncio.CancelledError`
+- Use async context managers for resources
+
+## Error Handling
+- Use specific exception types, not bare `except:`
+- Create custom exception classes for domain-specific errors
+- Use `raise ... from err` to preserve exception chains
+- Log exceptions with `logger.exception()` to capture tracebacks
+- Include context in error messages: what operation failed and with what input
+
+## Security
+- Never use `eval()`, `exec()`, or `compile()` on untrusted input
+- Never use `pickle` to deserialize untrusted data
+- Use `secrets` module for cryptographic randomness, not `random`
+- Use `subprocess` with `shell=False` and explicit argument lists
+- Sanitize file paths to prevent directory traversal
+
+## Logging & Observability
+- Use the `logging` module, not `print()` for operational output
+- Configure structured JSON logging for production
+- Use a consistent logger per module: `logger = logging.getLogger(__name__)`
+- Include correlation IDs in log context using `extra={}` or contextvars
+- Log levels:
+  - DEBUG: Detailed diagnostic info (development only)
+  - INFO: Normal operations (request start/end, external calls)
+  - WARNING: Recoverable issues (deprecated usage, rate limit approaching)
+  - ERROR: Failures requiring attention (unhandled exceptions, external service failures)
+- Never log: passwords, tokens, API keys, full request bodies with PII
+- Always log: operation name, duration, result (success/failure), error details
+
+## Testing
+- Use `pytest` as the test framework
+- Name test files `test_*.py` and test functions `test_*`
+- Use fixtures for setup/teardown
+- Use `pytest.raises` for exception testing
+- Mock external dependencies with `unittest.mock` or `pytest-mock`
+- Use `pytest-cov` for coverage tracking
+- Write tests alongside implementation, not after
+
+## Dependency Management
+- Pin exact versions in `requirements.txt` or `pyproject.toml`
+- Use `pip-audit` to check for known vulnerabilities
+- Generate `requirements.txt` with hashes when possible (`pip freeze`)
+- Document why each dependency is needed in comments
+
+## Common Mistakes to Avoid
+- Don't use mutable default arguments (`def func(items=[])` — use `None` and create inside)
+- Don't catch `Exception` broadly without re-raising or specific handling
+- Don't use `is` for value comparison (use `==`) — `is` is for identity only
+- Don't forget to close resources — use context managers (`with` statements)
+- Don't ignore return values from functions that can fail
+- Don't use `print()` for logging — use the `logging` module
+- Don't import inside functions unless there's a circular dependency reason

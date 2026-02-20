@@ -1,0 +1,11 @@
+name: "Brainstorm Overlay"
+description: "Prepended when user needs help fleshing out their project description"
+steps:
+  - id: brainstorm
+    name: "Brainstorm & Flesh Out Description"
+    prompt_file: "brainstorm.md"
+    target_tool: "Poppy (Opus 4.6)"
+    stores_as: "PROJECT_DESCRIPTION"
+    injects: ["PROJECT_DESCRIPTION"]
+    output_doc: null
+    skippable: false

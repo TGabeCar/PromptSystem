@@ -1,0 +1,105 @@
+---
+description: ".NET / C# specific coding rules"
+globs:
+  - "**/*.cs"
+  - "**/*.csproj"
+---
+
+# .NET / C# Development Rules
+
+## Nullable Reference Types
+- Enable nullable reference types in all projects (`<Nullable>enable</Nullable>`)
+- Use `string?` for nullable strings, `string` for non-nullable
+- Handle null checks explicitly — don't suppress warnings with `!` unless justified
+- Use null-conditional operators (`?.`) and null-coalescing (`??`) appropriately
+
+## Async/Await
+- Use `async`/`await` for all I/O-bound operations
+- Suffix async methods with `Async` (e.g., `GetUserAsync`)
+- Never use `.Result` or `.Wait()` on tasks — this causes deadlocks
+- Use `ConfigureAwait(false)` in library code
+- Return `Task` not `void` from async methods (except event handlers)
+- Use `CancellationToken` for cancellable operations
+- Pass `CancellationToken` through the entire call chain
+
+## Dependency Injection
+- Register services in `Program.cs` or dedicated extension methods
+- Use constructor injection — don't use the service locator pattern
+- Prefer `IServiceCollection` extension methods for registration
+- Use appropriate lifetimes: Singleton, Scoped, Transient
+- Don't inject `IServiceProvider` directly — inject specific dependencies
+
+## Entity Framework (if applicable)
+- Use migrations for all schema changes
+- Use `AsNoTracking()` for read-only queries
+- Avoid loading entire entities when you only need specific fields — use `.Select()`
+- Use parameterized queries — never string interpolation in raw SQL
+- Handle concurrency with optimistic concurrency tokens
+- Use `IDbContextFactory` for background services
+
+## Naming Conventions
+- **PascalCase**: Classes, methods, properties, events, namespaces
+- **camelCase**: Local variables, parameters
+- **_camelCase**: Private fields (with underscore prefix)
+- **IPascalCase**: Interfaces (prefix with I)
+- **PascalCaseAsync**: Async methods (suffix with Async)
+
+## LINQ
+- Prefer method syntax for simple queries, query syntax for complex joins
+- Use `FirstOrDefault` over `First` when null is a valid result
+- Use `Any()` over `Count() > 0` for existence checks
+- Be aware of deferred execution — materialize queries with `.ToList()` when needed
+- Avoid multiple enumeration of `IEnumerable` — materialize first
+
+## Error Handling
+- Use specific exception types — don't throw `Exception` directly
+- Create custom exception classes inheriting from appropriate base types
+- Use `ExceptionFilter` or middleware for global exception handling in ASP.NET
+- Don't catch exceptions you can't handle — let them propagate
+- Log exceptions with structured logging (Serilog, Microsoft.Extensions.Logging)
+- Include correlation IDs in error responses
+
+## Security
+- Use `[Authorize]` attributes on controllers/endpoints
+- Validate all model inputs with data annotations or FluentValidation
+- Use `IDataProtectionProvider` for encryption
+- Use `HTTPS` redirection middleware
+- Configure CORS explicitly — don't use `AllowAll` in production
+- Use anti-forgery tokens for form submissions
+- Sanitize user input before rendering in views
+
+## Logging & Observability
+- Use `Microsoft.Extensions.Logging` with `ILogger<T>`
+- Configure structured logging with Serilog or similar
+- Use log scopes for correlation: `using (_logger.BeginScope(new { CorrelationId = id }))`
+- Log levels:
+  - Debug: Detailed diagnostic (dev only)
+  - Information: Normal operations (request start/end, service calls)
+  - Warning: Recoverable issues (deprecated usage, retry)
+  - Error: Failures (unhandled exceptions, service failures)
+- Use dot-separated UpperCamelCase for log category names
+- Add health checks: `app.MapHealthChecks("/health")`
+- Never log: passwords, tokens, connection strings, PII
+
+## Performance
+- Use `IMemoryCache` or `IDistributedCache` for caching
+- Use `ResponseCaching` middleware where appropriate
+- Profile with BenchmarkDotNet for performance-critical code
+- Use `Span<T>` and `Memory<T>` for high-performance buffer operations
+- Avoid boxing value types unnecessarily
+- Use `IHttpClientFactory` to manage HttpClient lifetimes
+
+## Testing
+- Use xUnit or NUnit as the test framework
+- Use `Moq` or `NSubstitute` for mocking
+- Use `WebApplicationFactory<T>` for integration testing ASP.NET apps
+- Write tests alongside implementation
+- Test error paths and edge cases, not just happy paths
+
+## Common Mistakes to Avoid
+- Don't use `async void` (except for event handlers) — exceptions won't propagate
+- Don't capture `HttpContext` in background tasks — it's disposed
+- Don't mix `Task.Run` with async — it wastes thread pool threads
+- Don't forget to dispose `HttpClient` — use `IHttpClientFactory`
+- Don't use `DateTime.Now` — use `DateTime.UtcNow` or `DateTimeOffset`
+- Don't suppress nullable warnings with `!` without documenting why

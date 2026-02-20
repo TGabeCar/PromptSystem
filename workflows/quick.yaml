@@ -1,0 +1,29 @@
+name: "Quick"
+description: "Under 1 day — simple scripts, automations, quick fixes"
+steps:
+  - id: landscape_quick
+    name: "Quick Landscape Scan"
+    prompt_file: "landscape_quick.md"
+    target_tool: "Grok (web search recommended)"
+    stores_as: "LANDSCAPE_ANALYSIS"
+    injects: ["PROJECT_DESCRIPTION"]
+    output_doc: "LANDSCAPE.md"
+    skippable: true
+
+  - id: research_quick
+    name: "Quick Technology Research"
+    prompt_file: "research_quick.md"
+    target_tool: "Grok (web search recommended)"
+    stores_as: "RESEARCH_DOC"
+    injects: ["PROJECT_DESCRIPTION", "LANDSCAPE_ANALYSIS"]
+    output_doc: "RESEARCH.md"
+    skippable: true
+
+  - id: setup
+    name: "Project Setup"
+    prompt_file: "setup.md"
+    target_tool: "Poppy (Opus 4.6) or Cursor"
+    stores_as: "SETUP"
+    injects: ["PROJECT_DESCRIPTION", "LANDSCAPE_ANALYSIS", "RESEARCH_DOC"]
+    output_doc: null
+    skippable: false

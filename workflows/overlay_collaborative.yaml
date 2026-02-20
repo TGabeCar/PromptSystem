@@ -1,0 +1,20 @@
+name: "Collaborative Overlay"
+description: "Appended when working with other developers"
+steps:
+  - id: interface_contract
+    name: "Interface Contract Definition"
+    prompt_file: "interface_contract.md"
+    target_tool: "Poppy (Opus 4.6)"
+    stores_as: "INTERFACE_CONTRACT"
+    injects: ["PROJECT_DESCRIPTION", "ARCHITECTURE"]
+    output_doc: "INTERFACE_CONTRACT.md"
+    skippable: true
+
+  - id: adr
+    name: "Architecture Decision Records"
+    prompt_file: "adr.md"
+    target_tool: "Poppy (Opus 4.6)"
+    stores_as: "ADR"
+    injects: ["RESEARCH_DOC", "ARCHITECTURE"]
+    output_doc: "ADR.md"
+    skippable: true
