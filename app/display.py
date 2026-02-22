@@ -101,19 +101,38 @@ def get_multiline_input(
     prompt_text: str,
     nav_hint: str | None = None,
     single_line_commands: set[str] | frozenset[str] | None = None,
+    end_marker: str | None = None,
 ) -> str:
-    """Capture multi-line input. User presses Enter twice (two consecutive empty lines) to finish.
-    If nav_hint is set, show it with 'Enter twice to finish' on separate lines in a dim block.
-    If single_line_commands is set, only the first line is checked; when it matches (stripped, lowercased), it returns immediately."""
-    if nav_hint:
-        dim_part = f"Enter twice to finish\n{nav_hint}"
+    """Capture multi-line input.
+
+    When end_marker is set: input ends when (1) a line (stripped) equals end_marker, or
+    (2) three consecutive empty lines are seen. That way the user can type the marker
+    or just press Enter 3 times. The marker line is not included; three-blank termination
+    avoids splitting on two blanks inside pasted content.
+
+    When end_marker is None: input ends after two consecutive empty lines (legacy behavior).
+
+    If nav_hint is set, it is shown in the dim hint block.
+    If single_line_commands is set, only the first line is checked; when it matches
+    (stripped, lowercased), it returns immediately (for q/v/b/s before any paste).
+    """
+    # When end_marker is set we also allow 3 consecutive empty lines to finish (so user can
+    # just press Enter 3 times instead of typing the marker). Three blanks are much less
+    # likely to appear inside a pasted doc than two.
+    if end_marker is not None:
+        dim_part = f"When finished: type exactly {end_marker} and Enter — or press Enter 3 times."
+        if nav_hint:
+            dim_part = f"{dim_part}\n{nav_hint}"
     else:
         dim_part = "Enter twice to finish"
+        if nav_hint:
+            dim_part = f"{dim_part}\n{nav_hint}"
     console.print(f"[bold]{prompt_text}[/bold]")
     console.print(f"[dim]({dim_part})[/dim]")
     lines: list[str] = []
     empty_count = 0
     commands = single_line_commands if single_line_commands is not None else set()
+    empty_threshold = 3 if end_marker is not None else 2
 
     while True:
         try:
@@ -121,16 +140,30 @@ def get_multiline_input(
         except EOFError:
             break
 
-        if line == "":
-            empty_count += 1
-            if empty_count >= 2:
+        if end_marker is not None:
+            if line.strip() == end_marker:
                 break
-            lines.append(line)
+            if line == "":
+                empty_count += 1
+                if empty_count >= empty_threshold:
+                    break
+                lines.append(line)
+            else:
+                empty_count = 0
+                if commands and not lines and line.strip().lower() in commands:
+                    return line.strip()
+                lines.append(line)
         else:
-            empty_count = 0
-            if commands and not lines and line.strip().lower() in commands:
-                return line.strip()
-            lines.append(line)
+            if line == "":
+                empty_count += 1
+                if empty_count >= empty_threshold:
+                    break
+                lines.append(line)
+            else:
+                empty_count = 0
+                if commands and not lines and line.strip().lower() in commands:
+                    return line.strip()
+                lines.append(line)
 
     # Strip trailing empty lines that were part of the termination signal
     while lines and lines[-1] == "":

@@ -81,6 +81,15 @@ def _generate_project_context(project: dict[str, Any]) -> str:
     else:
         dont_build = "No landscape analysis performed"
 
+    # Manual setup (outside Cursor) — only when External Setup Guide was generated
+    if responses.get("EXTERNAL_SETUP"):
+        external_setup_section = (
+            "## Manual Setup (Outside Cursor)\n\n"
+            "See @docs/EXTERNAL_SETUP.md for accounts, API keys, cloud, and database setup to complete outside the IDE."
+        )
+    else:
+        external_setup_section = ""
+
     # Replace template variables
     replacements = {
         "PROJECT_NAME": project_name,
@@ -91,6 +100,7 @@ def _generate_project_context(project: dict[str, Any]) -> str:
         "DONT_BUILD": dont_build,
         "PROJECT_TYPE": project_type.replace("_", " ").title(),
         "COMPLEXITY": complexity.title(),
+        "EXTERNAL_SETUP_SECTION": external_setup_section,
     }
 
     result = template

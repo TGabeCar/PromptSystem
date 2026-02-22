@@ -63,3 +63,12 @@ steps:
     injects: ["PROJECT_DESCRIPTION", "RESEARCH_DOC", "PRD", "ARCHITECTURE", "TASKS", "TESTING_PLAN"]
     output_doc: null
     skippable: false
+
+  - id: external_setup
+    name: "External Setup Guide"
+    prompt_file: "external_setup_guide.md"
+    target_tool: "Poppy (Opus 4.6) or Cursor"
+    stores_as: "EXTERNAL_SETUP"
+    injects: ["PROJECT_DESCRIPTION", "RESEARCH_DOC", "PRD", "ARCHITECTURE", "TASKS", "TESTING_PLAN", "SETUP"]
+    output_doc: "EXTERNAL_SETUP.md"
+    skippable: false

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import secrets
 from typing import Any
 
 from app.display import get_input, get_multiline_input, show_menu
@@ -88,12 +89,20 @@ def run_questionnaire() -> dict[str, Any] | None:
         answers[key] = q["keys"][choice - 1]
 
     # If user doesn't need brainstorming, capture project description now
+    end_marker = f"PASTE_END_{secrets.token_hex(4)}"
     if answers["brainstorm"] == "no":
-        desc = get_multiline_input("Please paste your project description:")
+        desc = get_multiline_input(
+            "Please paste your project description below.",
+            end_marker=end_marker,
+        )
         answers["project_description"] = desc
     else:
         # User will provide a rough idea that gets refined in the brainstorm step
-        desc = get_multiline_input("Give a rough description of your project idea:")
+        end_marker_rough = f"PASTE_END_{secrets.token_hex(4)}"
+        desc = get_multiline_input(
+            "Give a rough description of your project idea below.",
+            end_marker=end_marker_rough,
+        )
         answers["project_description"] = desc
 
     return answers

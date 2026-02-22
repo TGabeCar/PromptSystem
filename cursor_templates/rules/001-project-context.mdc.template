@@ -33,6 +33,7 @@ Reference these for implementation guidance:
 - @docs/ARCHITECTURE.md — System design, component interfaces, data flows
 - @docs/TASKS.md — Implementation plan with dependencies and verification criteria
 - @docs/TESTING_PLAN.md — Testing strategy, test infrastructure, coverage goals
+{{EXTERNAL_SETUP_SECTION}}
 
 ## Working Agreements
 - Follow the architecture patterns defined in ARCHITECTURE.md

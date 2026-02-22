@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import secrets
 from pathlib import Path
 from typing import Any
 
@@ -63,13 +64,25 @@ def _inject_variables(template: str, responses: dict[str, str]) -> str:
     return re.sub(r"\{\{(\w+)\}\}", replacer, template)
 
 
+def _is_cursor_only_target(target_tool: str) -> bool:
+    """True if this step's prompt is intended for Cursor only (so @docs/ refs work)."""
+    t = (target_tool or "").strip().lower()
+    return t == "cursor"
+
+
 def _responses_for_prompt(
     project: dict[str, Any],
     doc_var_to_output_doc: dict[str, str],
+    step: dict[str, Any],
 ) -> dict[str, str]:
-    """When project_path is set, use short @docs/ references for doc variables; otherwise full content."""
+    """Use short @docs/ references only when the step target is Cursor. For Poppy/Grok/other, inject full doc content so the prompt is self-contained when pasted."""
     responses = project["responses"]
-    if not project.get("project_path") or not doc_var_to_output_doc:
+    use_short_refs = (
+        project.get("project_path")
+        and doc_var_to_output_doc
+        and _is_cursor_only_target(step.get("target_tool", ""))
+    )
+    if not use_short_refs:
         return responses
     effective = dict(responses)
     for var_name, output_doc in doc_var_to_output_doc.items():
@@ -109,8 +122,8 @@ def run_workflow(project: dict[str, Any]) -> None:
             save_project(project)
             continue
 
-        # Inject stored responses (short @docs/ refs when project_path is set and var is a doc)
-        effective_responses = _responses_for_prompt(project, doc_var_to_output_doc)
+        # Inject stored responses: full doc content for Poppy/Grok (self-contained); short @docs/ refs only when target is Cursor
+        effective_responses = _responses_for_prompt(project, doc_var_to_output_doc, step)
         assembled = _inject_variables(body, effective_responses)
 
         # Copy to clipboard (or save to file if clipboard fails, e.g. long prompt + Windows Clipboard History)
@@ -122,14 +135,12 @@ def run_workflow(project: dict[str, Any]) -> None:
         if clipboard_ok:
             show_success("Prompt copied to clipboard")
         else:
-            show_error(
-                "Clipboard copy failed (long prompts often fail when Windows Clipboard History is enabled)."
-            )
             if fallback_path:
-                show_info(f"Prompt saved to: {fallback_path}")
-                show_info("Open that file and copy from there, or use [V]iew to see the full prompt.")
+                show_info("Clipboard was busy (common with Windows Clipboard History). Prompt saved to:")
+                show_info(f"  {fallback_path}")
+                show_info("Open that file to copy, or use [V]iew to see the full prompt.")
             else:
-                show_error("Use [V]iew to see the full prompt and copy manually.")
+                show_error("Clipboard copy failed. Use [V]iew to see the full prompt and copy manually.")
             lines = assembled.splitlines()
             if len(lines) > 30:
                 console.print()
@@ -148,15 +159,16 @@ def run_workflow(project: dict[str, Any]) -> None:
         if injected:
             show_info(f"Context injected: {', '.join(injected)}")
 
-        # Show navigation options
+        # Show navigation options and end-marker so pasted content with blank lines doesn't split across steps
+        end_marker = f"PASTE_END_{secrets.token_hex(4)}"
         console.print()
         console.print(
-            "  After pasting into the AI tool and getting a response,\n"
-            "  paste the response here (press Enter twice when done).\n"
+            "  After pasting into the AI tool and getting a response, paste the response below."
         )
         skippable_hint = "[S]kip  " if step.get("skippable", False) else ""
         back_hint = "[B]ack  " if step_idx > 0 else ""
         console.print(f"  Or: {skippable_hint}{back_hint}[V]iew prompt  [Q]uit (progress saved)")
+        console.print(f"  [dim]When finished, type the marker below or press Enter 3 times.[/dim]")
         console.print()
 
         # Build single-line commands so Q/V/etc return immediately (no Enter twice)
@@ -167,7 +179,9 @@ def run_workflow(project: dict[str, Any]) -> None:
             nav_commands.add("s")
 
         # Capture response or navigation command
-        response_text = get_multiline_input("", single_line_commands=nav_commands)
+        response_text = get_multiline_input(
+            "", single_line_commands=nav_commands, end_marker=end_marker
+        )
 
         # Check for single-character navigation commands
         stripped = response_text.strip().lower()

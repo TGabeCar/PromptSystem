@@ -1,0 +1,72 @@
+{
+  "name": "serviceagreementautomation",
+  "answers": {
+    "name": "serviceagreementautomation",
+    "complexity": "quick",
+    "project_type": "automation",
+    "collaboration": "solo",
+    "brainstorm": "yes",
+    "hierarchical_tasks": "no",
+    "project_description": "This is a automation for my boss and one specific workflow he has with his clients, we just basically want to automate some forms and emails being sent out and a draft for an invoice to be created, based on some triggers and forms filled out by a customer. Here is the current process as it stands now with no automations:     1. Customer goes onto our website, goes to service tab, chooses which service they want to schedule a meeting about, and clicks the button the schedule a meeting, which takes them to a calendly page to choose an appointment time and pay a deposit/down payment through stripe embedded on this same page, and they fill out a form with a few basic questions. I believe the information in this form gets sent to my boss through the SaaS called Elfsite, my boss uses this information to prepare what he needs to know for the meeting with the customer.    2. This Zoom call which the customer scheduled through calendly on our website happens    3. My boss sends out a link via email to this customer which is a form on our website about the users finances for the user to fill out     4. When this is filled out and my boss gets the results, he uses this info and the info from the call to calculate what the invoice will be for the customer and creates it in stripe and sends it to the customer along with the service agreement which he fills out for ths customer.\n\nThis is essentially the workflow we want to automate, and really only 3 points: 1. An AI summary of the customers original information from the form they fill out to book the appointment, this AI summary shoulld be with grok API probably and be sent via email to my boss    2. Send out the post call crypto form after the Zoom call ends, probably using Zapier if this would work    3. Use information to fill out service agreement, send this automatically and create Stripe invoice DRAFT, and send email to my boss notifying him, and linking him to the stripe draft to complete it and send it out"
+  },
+  "workflow": [
+    {
+      "id": "brainstorm",
+      "name": "Brainstorm & Flesh Out Description",
+      "prompt_file": "brainstorm.md",
+      "target_tool": "Poppy (Opus 4.6)",
+      "stores_as": "PROJECT_DESCRIPTION",
+      "injects": [
+        "PROJECT_DESCRIPTION"
+      ],
+      "output_doc": null,
+      "skippable": false
+    },
+    {
+      "id": "landscape_quick",
+      "name": "Quick Landscape Scan",
+      "prompt_file": "landscape_quick.md",
+      "target_tool": "Grok (web search recommended)",
+      "stores_as": "LANDSCAPE_ANALYSIS",
+      "injects": [
+        "PROJECT_DESCRIPTION"
+      ],
+      "output_doc": "LANDSCAPE.md",
+      "skippable": true
+    },
+    {
+      "id": "research_quick",
+      "name": "Quick Technology Research",
+      "prompt_file": "research_quick.md",
+      "target_tool": "Grok (web search recommended)",
+      "stores_as": "RESEARCH_DOC",
+      "injects": [
+        "PROJECT_DESCRIPTION",
+        "LANDSCAPE_ANALYSIS"
+      ],
+      "output_doc": "RESEARCH.md",
+      "skippable": true
+    },
+    {
+      "id": "setup",
+      "name": "Project Setup",
+      "prompt_file": "setup.md",
+      "target_tool": "Poppy (Opus 4.6) or Cursor",
+      "stores_as": "SETUP",
+      "injects": [
+        "PROJECT_DESCRIPTION",
+        "LANDSCAPE_ANALYSIS",
+        "RESEARCH_DOC"
+      ],
+      "output_doc": null,
+      "skippable": false
+    }
+  ],
+  "current_step": 0,
+  "responses": {
+    "PROJECT_DESCRIPTION": "This is a automation for my boss and one specific workflow he has with his clients, we just basically want to automate some forms and emails being sent out and a draft for an invoice to be created, based on some triggers and forms filled out by a customer. Here is the current process as it stands now with no automations:     1. Customer goes onto our website, goes to service tab, chooses which service they want to schedule a meeting about, and clicks the button the schedule a meeting, which takes them to a calendly page to choose an appointment time and pay a deposit/down payment through stripe embedded on this same page, and they fill out a form with a few basic questions. I believe the information in this form gets sent to my boss through the SaaS called Elfsite, my boss uses this information to prepare what he needs to know for the meeting with the customer.    2. This Zoom call which the customer scheduled through calendly on our website happens    3. My boss sends out a link via email to this customer which is a form on our website about the users finances for the user to fill out     4. When this is filled out and my boss gets the results, he uses this info and the info from the call to calculate what the invoice will be for the customer and creates it in stripe and sends it to the customer along with the service agreement which he fills out for ths customer.\n\nThis is essentially the workflow we want to automate, and really only 3 points: 1. An AI summary of the customers original information from the form they fill out to book the appointment, this AI summary shoulld be with grok API probably and be sent via email to my boss    2. Send out the post call crypto form after the Zoom call ends, probably using Zapier if this would work    3. Use information to fill out service agreement, send this automatically and create Stripe invoice DRAFT, and send email to my boss notifying him, and linking him to the stripe draft to complete it and send it out"
+  },
+  "created_at": "2026-02-20T21:35:22.618841+00:00",
+  "updated_at": "2026-02-20T21:35:55.046325+00:00",
+  "project_path": "C:\\Users\\Gabe\\source\\repos\\ServiceAgreementAutomation"
+}

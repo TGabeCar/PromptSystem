@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import secrets
 from typing import Any
 
 import yaml
@@ -194,12 +195,10 @@ def _run_sequence(selected: dict[str, Any], initial_values: dict[str, str]) -> N
             show_success("Prompt copied to clipboard")
             show_info(f"Paste into: {target_tool}")
         else:
-            show_error(
-                "Clipboard copy failed (long prompts often fail when Windows Clipboard History is enabled)."
-            )
             if fallback_path:
-                show_info(f"Prompt saved to: {fallback_path}")
-            show_error("Displaying prompt:")
+                show_info("Clipboard was busy (common with Windows Clipboard History). Prompt saved to:")
+                show_info(f"  {fallback_path}")
+            show_info("Displaying prompt:")
             console.print()
             console.print(assembled)
             console.print()
@@ -217,18 +216,20 @@ def _run_sequence(selected: dict[str, Any], initial_values: dict[str, str]) -> N
 
         if stores_as:
             # Intermediate step that captures a response for injection into later steps
+            end_marker = f"PASTE_END_{secrets.token_hex(4)}"
             console.print()
             console.print(
-                "  After pasting into the AI tool and getting a response,\n"
-                "  paste the response here (press Enter twice when done).\n"
+                "  After pasting into the AI tool and getting a response, paste the response below."
             )
             console.print(f"  Or: [V]iew prompt  [Q]uit")
+            console.print(f"  [dim]When finished, type the marker below or press Enter 3 times.[/dim]")
             console.print()
 
             while True:
                 response_text = get_multiline_input(
                     "",
                     single_line_commands=CANCEL_INPUTS | {"v"},
+                    end_marker=end_marker,
                 )
                 stripped = response_text.strip().lower()
 
@@ -340,12 +341,10 @@ def _run_single_oneshot(
         show_success("Prompt copied to clipboard")
         show_info(f"Paste into: {target_tool}")
     else:
-        show_error(
-            "Clipboard copy failed (long prompts often fail when Windows Clipboard History is enabled)."
-        )
         if fallback_path:
-            show_info(f"Prompt saved to: {fallback_path}")
-        show_error("Displaying prompt:")
+            show_info("Clipboard was busy (common with Windows Clipboard History). Prompt saved to:")
+            show_info(f"  {fallback_path}")
+        show_info("Displaying prompt:")
         console.print(assembled)
 
     next_choice = show_menu("What next?", [

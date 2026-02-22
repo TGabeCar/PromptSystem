@@ -23,8 +23,8 @@ workflow
 
 | Option | Description |
 |--------|-------------|
-| **Create Project** | Multi-step workflows for software projects (New, Continue, List, Delete) |
-| **Other Prompts** | One-shot prompts for research, tool selection, meeting prep, and more |
+| **Create Project** | Multi-step workflows (submenu: New Project, Continue Project, List Projects, Delete Project) |
+| **Other Prompts** | One-shot prompts by category (research, decisions, communication, Base44, etc.) |
 | **Settings** | View paths for prompts and workflows |
 | **Exit** | Quit the application |
 
@@ -61,7 +61,7 @@ For **Complex** projects, you can choose **Hierarchical task breakdown** at ques
 
 ## Other Prompts (one-shot)
 
-Standalone prompts for research, decisions, and stakeholder work. No project state — copy, paste, done.
+Standalone prompts for research, decisions, and stakeholder work. No project state — copy, paste, done. Prompts are grouped by category in the app (Research & Discovery, Decisions & Comparison, Communication, Documentation, Base44 Development, Other).
 
 | Prompt | Use case |
 |--------|----------|
@@ -77,7 +77,9 @@ Standalone prompts for research, decisions, and stakeholder work. No project sta
 | **Summarize / TL;DR** | Condense content into key points |
 | **Process Documentation** | Document a workflow into steps and roles |
 
-Defined in `workflows/oneshot.yaml`; templates in `prompts/oneshot_*.md`.
+**Base44 Development** (category in Other Prompts): Build New App, Bug Fix, Codebase Analysis, Cleanup/Refactor, Technical Documentation, Overall Technical Documentation, Update Existing Technical Documentation, and **Transfer Feature Between Apps** (two-step sequence: export from source app → distill into implementation prompt).
+
+Defined in `workflows/oneshot.yaml`; templates in `prompts/oneshot_*.md` and `prompts/oneshot_base44_*.md`.
 
 ## Project Structure
 
@@ -92,6 +94,8 @@ Defined in `workflows/oneshot.yaml`; templates in `prompts/oneshot_*.md`.
 │   ├── state.py                # Save/load project state (JSON)
 │   ├── output.py               # Generate final output files
 │   ├── display.py              # Rich console formatting helpers
+│   ├── path_picker.py          # Project directory selection
+│   ├── clipboard_util.py       # Copy-to-clipboard helpers
 │   └── config.py               # Paths and constants
 │
 ├── prompts/                    # Prompt templates (Markdown + YAML frontmatter)
@@ -106,6 +110,7 @@ Defined in `workflows/oneshot.yaml`; templates in `prompts/oneshot_*.md`.
 │   ├── architecture_full.md
 │   ├── tasks_standard.md
 │   ├── tasks_detailed.md
+│   ├── tasks_hierarchical.md
 │   ├── testing_plan.md
 │   ├── setup.md
 │   ├── interface_contract.md
@@ -120,7 +125,8 @@ Defined in `workflows/oneshot.yaml`; templates in `prompts/oneshot_*.md`.
 │   ├── oneshot_vendor_comparison.md
 │   ├── oneshot_learning_path.md
 │   ├── oneshot_summarize.md
-│   └── oneshot_process_documentation.md
+│   ├── oneshot_process_documentation.md
+│   └── oneshot_base44_*.md      # Base44 development prompts (build app, bug fix, etc.)
 │
 ├── workflows/                  # Workflow definitions (YAML)
 │   ├── quick.yaml
@@ -172,8 +178,8 @@ Workflow definitions are YAML files in `workflows/`. Each defines an ordered lis
 Create a new YAML file in `workflows/` following the existing format. To use it, update `app/sequencer.py` to map a new complexity level to your workflow.
 
 ### Adding New One-Shot Prompts
-1. Create a prompt template in `prompts/oneshot_*.md` with `{{VARIABLE}}` placeholders
-2. Add an entry to `workflows/oneshot.yaml` with `id`, `name`, `prompt_file`, `target_tool`, and `inputs`
+1. Create a prompt template in `prompts/oneshot_*.md` (or `prompts/oneshot_base44_*.md`) with `{{VARIABLE}}` placeholders
+2. Add an entry to `workflows/oneshot.yaml` with `id`, `name`, `category` (e.g. `research`, `decisions`, `base44`), `prompt_file`, `target_tool`, and `inputs`. For multi-step one-shots use `type: sequence` and a `steps` list (see e.g. `base44_transfer_feature` in the YAML)
 
 ## Output Files
 
@@ -267,4 +273,4 @@ On the other PC, run `git pull origin main` to get these updates. Resolve any me
 ## Requirements
 
 - Python 3.11+
-- Dependencies: `rich`, `pyperclip`, `pyyaml`
+- Dependencies: `rich` (≥13.0), `pyperclip` (≥1.8), `pyyaml` (≥6.0). See `pyproject.toml` for exact ranges.
